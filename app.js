@@ -1,41 +1,65 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+// app.js
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+// 1. Cargar Variables de Entorno (siempre al inicio)
+require('dotenv').config(); 
 
-var app = express();
+const express = require('express');
+const mongoose = require('mongoose');
+const app = express();
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+// --- 2. FUNCIÓN DE CONEXIÓN A MONGOOSE ---
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+const DB_URI = process.env.MONGO_URI; 
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+const connectDB = async () => {
+    try {
+        if (!DB_URI) {
+            console.error('❌ Error: La variable MONGO_URI no está definida en .env');
+            process.exit(1);
+        }
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
+        await mongoose.connect(DB_URI, {
+            // Se eliminan useNewUrlParser y useUnifiedTopology por ser obsoletas en Mongoose 6+
+        });
+
+        console.log('🎉 MongoDB Atlas conectado exitosamente.');
+
+    } catch (error) {
+        console.error('❌ Error de conexión a MongoDB:', error.message);
+        process.exit(1);
+    }
+};
+
+// Invocación de la conexión a la base de datos
+connectDB();
+
+
+// --- 3. MIDDLEWARE DE APLICACIÓN ---
+
+// Permite a Express leer el cuerpo de la solicitud como JSON
+app.use(express.json()); 
+
+
+// --- 4. CONFIGURACIÓN DE RUTAS ---
+
+// Importar todos los routers
+const catalogRoutes = require('./routes/catalogRoutes'); 
+const difficultyRoutes = require('./routes/levelDifficultyRoutes'); 
+const areaRoutes = require('./routes/areaRoutes'); // <-- NUEVO
+
+// Ruta base
+app.get('/', (req, res) => {
+    res.send('Servidor Express funcionando y conectado a MongoDB.');
 });
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+// Conectar las rutas
+app.use('/api/catalogs', catalogRoutes); 
+app.use('/api/difficulty', difficultyRoutes); 
+app.use('/api/areas', areaRoutes); // <-- NUEVO
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
 
-module.exports = app;
+// --- 5. INICIO DEL SERVIDOR ---
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => console.log(`Servidor corriendo en http://localhost:${PORT}`));
