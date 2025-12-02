@@ -2,14 +2,15 @@
 const express = require('express');
 const router = express.Router();
 const levelDifficultyController = require('../controls/levelDifficultyController'); 
+const { protect, authorize } = require('../middleware/authMiddleware');
 
 router.route('/')
-    .post(levelDifficultyController.createDifficulty) // POST /api/difficulty
-    .get(levelDifficultyController.getAllDifficulties); // GET /api/difficulty
+    .post(protect, authorize(['Admin']), levelDifficultyController.createDifficulty) // POST /api/difficulty
+    .get(protect,levelDifficultyController.getAllDifficulties); // GET /api/difficulty
 
 router.route('/:id')
-    .get(levelDifficultyController.getDifficultyById)   // GET /api/difficulty/:id
-    .put(levelDifficultyController.updateDifficulty)    // PUT /api/difficulty/:id
-    .delete(levelDifficultyController.deleteDifficulty); // DELETE /api/difficulty/:id
+    .get(protect,levelDifficultyController.getDifficultyById)   // GET /api/difficulty/:id
+    .put(protect, authorize(['Admin']),levelDifficultyController.updateDifficulty)    // PUT /api/difficulty/:id
+    .delete(protect, authorize(['Admin']),levelDifficultyController.deleteDifficulty); // DELETE /api/difficulty/:id
 
 module.exports = router;

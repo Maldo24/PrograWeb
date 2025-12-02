@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const UserSchema = new mongoose.Schema({
     username: {
         type: String,  
-
         required: true,
         unique: true,
     },
@@ -15,8 +14,9 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    // FIX: Debemos usar 'mongoose.Schema.Types.ObjectId'
     rol:{
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId, 
         ref: 'Role',
         required: true
     }

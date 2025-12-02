@@ -45,8 +45,9 @@ app.use(express.json());
 const catalogRoutes = require('./routes/catalogRoutes'); 
 const difficultyRoutes = require('./routes/levelDifficultyRoutes'); 
 const areaRoutes = require('./routes/areaRoutes'); 
-const roleRoutes = require('./routes/roleRoutes'); // <-- ROL
-const userRoutes = require('./routes/userRoutes'); // <-- USUARIO
+const roleRoutes = require('./routes/roleRoutes'); 
+const userRoutes = require('./routes/userRoutes'); 
+const authRoutes = require('./routes/authRoutes');
 
 // Ruta base
 app.get('/', (req, res) => {
@@ -59,6 +60,7 @@ app.use('/api/difficulty', difficultyRoutes);
 app.use('/api/areas', areaRoutes); 
 app.use('/api/roles', roleRoutes); 
 app.use('/api/users', userRoutes); 
+app.use('/api/auth', authRoutes);
 
 
 // --- 5. INICIO DEL SERVIDOR ---

@@ -2,14 +2,15 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controls/userController'); 
+const { protect, authorize } = require('../middleware/authMiddleware');
 
 router.route('/')
-    .post(userController.createUser) // POST /api/users
-    .get(userController.getAllUsers); // GET /api/users
+    .post(protect, authorize(['Admin']),userController.createUser) // POST /api/users
+    .get(protect, userController.getAllUsers); // GET /api/users
 
 router.route('/:id')
-    .get(userController.getUserById)      // GET /api/users/:id
-    .put(userController.updateUser)       // PUT /api/users/:id
-    .delete(userController.deleteUser);   // DELETE /api/users/:id
+    .get(protect, userController.getUserById)      // GET /api/users/:id
+    .put(protect, authorize(['Admin']),userController.updateUser)       // PUT /api/users/:id
+    .delete(protect, authorize(['Admin']),userController.deleteUser);   // DELETE /api/users/:id
 
 module.exports = router;

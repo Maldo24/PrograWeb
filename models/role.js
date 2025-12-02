@@ -1,6 +1,6 @@
-const moogoose = require('mongoose');
+const mongoose = require('mongoose'); // Corregido a 'mongoose'
 
-const RoleSchema = new moogoose.Schema({
+const RoleSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true, 
@@ -12,4 +12,4 @@ const RoleSchema = new moogoose.Schema({
     }
 },{timestamps: true});
 
-module.exports = moogoose.model('Role', RoleSchema);
+module.exports = mongoose.model('Role', RoleSchema);
