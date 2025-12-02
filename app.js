@@ -1,6 +1,6 @@
 // app.js
 
-// 1. Cargar Variables de Entorno (siempre al inicio)
+// 1. Cargar Variables de Entorno
 require('dotenv').config(); 
 
 const express = require('express');
@@ -19,7 +19,7 @@ const connectDB = async () => {
         }
 
         await mongoose.connect(DB_URI, {
-            // Se eliminan useNewUrlParser y useUnifiedTopology por ser obsoletas en Mongoose 6+
+            // Opciones obsoletas eliminadas
         });
 
         console.log('🎉 MongoDB Atlas conectado exitosamente.');
@@ -30,13 +30,12 @@ const connectDB = async () => {
     }
 };
 
-// Invocación de la conexión a la base de datos
 connectDB();
 
 
 // --- 3. MIDDLEWARE DE APLICACIÓN ---
 
-// Permite a Express leer el cuerpo de la solicitud como JSON
+// Permite a Express leer el cuerpo de la solicitud como JSON (ESENCIAL)
 app.use(express.json()); 
 
 
@@ -45,17 +44,21 @@ app.use(express.json());
 // Importar todos los routers
 const catalogRoutes = require('./routes/catalogRoutes'); 
 const difficultyRoutes = require('./routes/levelDifficultyRoutes'); 
-const areaRoutes = require('./routes/areaRoutes'); // <-- NUEVO
+const areaRoutes = require('./routes/areaRoutes'); 
+const roleRoutes = require('./routes/roleRoutes'); // <-- ROL
+const userRoutes = require('./routes/userRoutes'); // <-- USUARIO
 
 // Ruta base
 app.get('/', (req, res) => {
     res.send('Servidor Express funcionando y conectado a MongoDB.');
 });
 
-// Conectar las rutas
+// Conectar las rutas a sus respectivos prefijos de API
 app.use('/api/catalogs', catalogRoutes); 
 app.use('/api/difficulty', difficultyRoutes); 
-app.use('/api/areas', areaRoutes); // <-- NUEVO
+app.use('/api/areas', areaRoutes); 
+app.use('/api/roles', roleRoutes); 
+app.use('/api/users', userRoutes); 
 
 
 // --- 5. INICIO DEL SERVIDOR ---
