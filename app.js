@@ -64,7 +64,4 @@ app.use('/api/auth', authRoutes);
 
 
 // --- 5. INICIO DEL SERVIDOR ---
-
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => console.log(`Servidor corriendo en http://localhost:${PORT}`));
+module.exports = app;

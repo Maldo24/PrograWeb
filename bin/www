@@ -6,20 +6,32 @@
 
 var app = require('../app');
 var debug = require('debug')('prograweb:server');
-var http = require('http');
+var http = require('http'); // Se mantiene pero ya no se usa para crear el servidor
+
+//  NUEVAS IMPORTACIONES PARA HTTPS/HTTP/2
+var https = require('https'); // Se mantiene por si se necesita
+var fs = require('fs'); // Módulo nativo para leer archivos .pem [cite: 87]
+var spdy = require('spdy'); // Librería para soporte de HTTP/2 [cite: 146]
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.PORT || '5000');
 app.set('port', port);
 
 /**
- * Create HTTP server.
+ * Crear el Servidor SEGURO (HTTPS/HTTP/2)
  */
 
-var server = http.createServer(app);
+// 1. Leemos los certificados (¡Ajusta la ruta si moviste los archivos!) 
+var options = {
+    key: fs.readFileSync('key.pem'),
+    cert: fs.readFileSync('cert.pem')
+};
+
+// 2. Creamos el servidor usando SPDY (que soporta HTTP/2) [cite: 151, 152]
+var server = spdy.createServer(options, app);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -86,5 +98,6 @@ function onListening() {
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
+  console.log('Servidor seguro corriendo en https://localhost:' + addr.port); // Mensaje actualizado
   debug('Listening on ' + bind);
 }
